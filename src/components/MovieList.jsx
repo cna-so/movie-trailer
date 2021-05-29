@@ -7,7 +7,7 @@ import axios from "api/axios";
 
 import MovieListItem from "./MovieListItem";
 
-const baseURL = "https://image.tmdb.org/t/p/w780/";
+const baseURL = "https://image.tmdb.org/t/p/w185/";
 
 const MovieList = ({ sectionTitle, fetchUrl }) => {
   const [movies, setMovies] = useState([]);

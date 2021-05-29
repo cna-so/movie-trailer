@@ -1,9 +1,27 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { BiSearchAlt } from "react-icons/bi";
+import { useDispatch } from "react-redux";
+
+import { setSignOutState } from "features/userSlice";
+import { useHistory } from "react-router-dom";
+import { auth } from "firebaseConfig";
 
 const Nav = () => {
   const [showHandler, setShowHandler] = useState(false);
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const logoutHandler = () => {
+    auth
+      .signOut()
+      .then(() => {
+        dispatch(setSignOutState());
+        history.push("/");
+      })
+      .catch((err) => alert(err.message));
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", () => {
@@ -36,14 +54,18 @@ const Nav = () => {
           <li>
             <BiSearchAlt />
           </li>
+          <li>
+            <Logout onClick={logoutHandler}>Logout</Logout>
+          </li>
         </ul>
       </NavMenu>
+      <LogoutM onClick={logoutHandler}>Logout</LogoutM>
     </Navigation>
   );
 };
 
 const Navigation = styled.nav`
-  z-index: 1;
+  z-index: 10;
   position: fixed;
   top: 0px;
   left: 0px;
@@ -71,6 +93,7 @@ const Logo = styled.div`
 const NavMenu = styled.div`
   ul {
     display: flex;
+    align-items: center;
   }
   li {
     cursor: pointer;
@@ -81,6 +104,22 @@ const NavMenu = styled.div`
   }
   @media screen and (max-width: 768px) {
     display: none;
+  }
+`;
+const Logout = styled.button`
+  background: #ff0d1f;
+  padding: 0.8rem 2.5rem;
+  border-radius: 1rem;
+  cursor: pointer;
+`;
+const LogoutM = styled.button`
+  display: none;
+  background: #ff0d1f;
+  padding: 0.8rem 2.5rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  @media screen and (max-width: 768px) {
+    display: inline-block;
   }
 `;
 
