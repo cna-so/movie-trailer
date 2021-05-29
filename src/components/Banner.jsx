@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
+import YouTube from "react-youtube";
+import movieTrailer from "movie-trailer";
 import { TiStarHalfOutline } from "react-icons/ti";
 import { MdAdd, MdPlayArrow } from "react-icons/md";
 
@@ -13,6 +15,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 const Banner = () => {
   const [movies, setMovies] = useState([]);
+  const [trailerUrl, setTrailerUrl] = useState();
 
   useEffect(() => fetchBannerSliderData(), []);
 
@@ -28,45 +31,70 @@ const Banner = () => {
   const fetchBannerSliderData = async () => {
     try {
       const { data } = await axios.get(requests.fetchNetflixOriginals);
-      setMovies(data.results.slice(0, 4));
+      setMovies(data.results.slice(4, 9));
       return data;
     } catch (err) {}
   };
+
+  const opts = {
+    autoPlay: 1,
+    height: "390",
+    width: "100%",
+  };
+
+  const youtubeHandler = (name) => {
+    console.log(movies)
+    if (trailerUrl) {
+      setTrailerUrl("");
+    } else {
+      movieTrailer(name || "")
+        .then((url) => {
+          console.log(url);
+          const urlParams = new URLSearchParams(new URL(url).search);
+          setTrailerUrl(urlParams.get("v"));
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   return (
-    <Carousel {...settings}>
-      {movies.map((movie) => (
-        <Wrap key={movie.id}>
-          <div />
-          <a>
-            <div
-              style={{
-                backgroundImage: `url("https://image.tmdb.org/t/p/original/${movie?.backdrop_path}")`,
-              }}
-            ></div>
-          </a>
-          <Content>
-            <div>
-              <h3>
-                <TiStarHalfOutline /> {movie.vote_average}
-                <span>
-                  {movie.original_language} | {movie.origin_country[0]}
-                </span>
-              </h3>
-              <h1>{movie.name}</h1>
-              <p>{movie?.overview}</p>
+    <>
+      <Carousel {...settings}>
+        {movies.map((movie) => (
+          <Wrap key={movie.id}>
+            <div />
+            <a>
+              <div
+                style={{
+                  backgroundImage: `url("https://image.tmdb.org/t/p/original/${movie?.backdrop_path}")`,
+                }}
+              ></div>
+            </a>
+            <Content>
               <div>
-                <WatchBtn>
-                  <MdPlayArrow /> WATCH
-                </WatchBtn>
-                <AddBtn disabled={true} >
-                  <MdAdd /> ADD 
-                </AddBtn>
+                <h3>
+                  <TiStarHalfOutline /> {movie.vote_average}
+                  <span>
+                    {movie.original_language} | {movie.origin_country[0]}
+                  </span>
+                </h3>
+                <h1>{movie.name}</h1>
+                <p>{movie?.overview}</p>
+                <div>
+                  <WatchBtn onClick={() => youtubeHandler(movie?.name)}>
+                    <MdPlayArrow /> WATCH
+                  </WatchBtn>
+                  <AddBtn disabled={true}>
+                    <MdAdd /> ADD
+                  </AddBtn>
+                </div>
               </div>
-            </div>
-          </Content>
-        </Wrap>
-      ))}
-    </Carousel>
+            </Content>
+          </Wrap>
+        ))}
+      </Carousel>
+      {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
+    </>
   );
 };
 
@@ -135,7 +163,6 @@ const Wrap = styled.div`
       background-position: center center;
       background-repeat: no-repeat;
       background-size: cover;
-      
     }
 
     &:hover {
@@ -153,14 +180,13 @@ const Content = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  top : 0;
+  top: 0;
   left: 0;
   & > div {
     width: 50%;
 
     & > div {
       display: flex;
-
     }
   }
   h3 {
@@ -180,9 +206,9 @@ const Content = styled.div`
   }
 
   @media screen and (max-width: 768px) {
-   p {
-     display: none;
-   }
+    p {
+      display: none;
+    }
   }
 `;
 const WatchBtn = styled.button`
@@ -192,7 +218,6 @@ const WatchBtn = styled.button`
   display: flex;
   align-items: center;
   cursor: pointer;
-  
 `;
 const AddBtn = styled.button`
   background: #000;
@@ -204,7 +229,7 @@ const AddBtn = styled.button`
   cursor: not-allowed;
 
   @media screen and (max-width: 768px) {
-  padding: 0.8rem 2.5rem;
+    padding: 0.8rem 2.5rem;
   }
 `;
 
