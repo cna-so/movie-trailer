@@ -58,7 +58,7 @@ const Banner = () => {
                 <WatchBtn>
                   <MdPlayArrow /> WATCH
                 </WatchBtn>
-                <AddBtn>
+                <AddBtn disabled={true} >
                   <MdAdd /> ADD 
                 </AddBtn>
               </div>
@@ -150,6 +150,11 @@ const Content = styled.div`
   justify-content: center;
   flex-direction: column;
   padding-left: 10%;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top : 0;
+  left: 0;
   & > div {
     width: 50%;
 
@@ -186,6 +191,7 @@ const WatchBtn = styled.button`
   border-radius: 1rem;
   display: flex;
   align-items: center;
+  cursor: pointer;
   
 `;
 const AddBtn = styled.button`
@@ -195,6 +201,7 @@ const AddBtn = styled.button`
   margin-left: 25px;
   display: flex;
   align-items: center;
+  cursor: not-allowed;
 
   @media screen and (max-width: 768px) {
   padding: 0.8rem 2.5rem;
