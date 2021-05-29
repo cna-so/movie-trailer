@@ -50,9 +50,9 @@ const HomeScreen = () => {
   );
 };
 
-  const Home = styled.section`
+const Home = styled.section`
   padding: 0 0 4rem 0;
-  `
+`;
 
 const Container = styled.main`
   position: relative;
