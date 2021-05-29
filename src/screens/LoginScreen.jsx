@@ -1,12 +1,67 @@
 import styled from "styled-components";
 
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+
+import {
+  selectUserEmail,
+  setSignOutState,
+  setUserLoginDetails,
+} from "features/userSlice";
+import { provider, auth } from "firebaseConfig";
+
 const LoginScreen = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const userEmail = useSelector(selectUserEmail);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUser(user);
+        history.push("/home");
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleAuth = () => {
+    if (!userEmail) {
+      auth
+        .signInWithPopup(provider)
+        .then((result) => {
+          setUser(result.user);
+        })
+        .catch((error) => {
+          alert(error.message);
+          // console.log(error)
+        });
+      } 
+      else if (userEmail) {
+        auth
+          .signOut()
+          .then(() => {
+            dispatch(setSignOutState());
+            // history.push("/");
+          })
+          .catch((err) => alert(err.message));
+      }
+  };
+
+  const setUser = (user) => {
+    dispatch(
+      setUserLoginDetails({
+        email: user.email,
+      })
+    );
+  };
   return (
     <Container>
       <Content>
         <CTA>
           <CTALogoOne src="/images/cta-logo-one.svg" alt="" />
-          <SignUp>Login With Google</SignUp>
+          <SignUp onClick={handleAuth}>Login With Google</SignUp>
           <Description>
             Get Premier Access to Raya and the Last Dragon for an additional fee
             with a Disney+ subscription. As of 03/26/21, the price of Disney+
